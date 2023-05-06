@@ -8,15 +8,148 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var allMoves = ["Камень", "Ножницы", "Бумага"]
+    @State private var computerMove = ""
+    @State private var computerScore = 0
+    @State private var playerScore = 0
+    @State private var gameOver = false
+    @State private var moveTitle = "Начнем?"
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            GeometryReader { geometry in
+                VStack {
+                    Spacer()
+                    HStack {
+                        Text("Компьютер")
+                            .frame(width: geometry.size.width / 2, height: 50, alignment: .center)
+                            .font(.title)
+                            .foregroundColor(.white)
+                        Text("Игрок")
+                            .frame(width: geometry.size.width / 2, height: 50, alignment: .center)
+                            .font(.title)
+                            .foregroundColor(.white)
+                    }
+                    
+                    HStack {
+                        Text("\(computerScore)")
+                            .font(.system(size: 50))
+                            .frame(width: geometry.size.width / 2, height: 50, alignment: .center)
+                            .foregroundColor(.white)
+                        Text("\(playerScore)")
+                            .font(.system(size: 50))
+                            .frame(width: geometry.size.width / 2, height: 50, alignment: .center)
+                            .foregroundColor(.white)
+                    }
+                    Spacer()
+                    Text(moveTitle)
+                        .font(.largeTitle)
+                        .foregroundColor(.white)
+                    Spacer()
+                    HStack {
+                        if computerMove == "Камень" {
+                            Text("🪨")
+                                .font(.system(size: 100))
+                        } else if computerMove == "Ножницы" {
+                            Text("✂️")
+                                .font(.system(size: 100))
+                        } else if computerMove == "Бумага" {
+                            Text("📄")
+                                .font(.system(size: 100))
+                        } else {
+                            Text("⁉️")
+                                .font(.system(size: 100))
+                        }
+                    }
+                    Spacer()
+                    HStack(spacing: 30) {
+                        Button {
+                            playerTapButton("Камень")
+                        } label: {
+                            Text("🪨")
+                                .font(.system(size: geometry.size.width / 4))
+                        }
+                        Button {
+                            playerTapButton("Ножницы")
+                        } label: {
+                            Text("✂️")
+                                .font(.system(size: geometry.size.width / 4))
+                        }
+                        
+                        Button {
+                            playerTapButton("Бумага")
+                        } label: {
+                            Text("📄")
+                                .font(.system(size: geometry.size.width / 4))
+                        }
+                    }
+                    Spacer()
+                }
+                .navigationTitle("Игра: Камень, ножницы, бумага.")
+                .navigationBarTitleDisplayMode(.inline)
+                .alert("Конец игры!", isPresented: $gameOver) {
+                    Button("Начать заново") {
+                        computerScore = 0
+                        playerScore = 0
+                        gameOver = false
+                    }
+                } message: {
+                    if computerScore > playerScore {
+                        Text("Skynet победил!")
+                    } else {
+                        Text("Человечество победило!")
+                    }
+                }
+            }
+            .background {
+                LinearGradient(colors: [.red, .black], startPoint: .top, endPoint: .bottom)
+            }
+            .ignoresSafeArea()
         }
-        .padding()
     }
+    
+    func playerTapButton(_ move: String) {
+        computerMove = allMoves.randomElement() ?? ""
+        
+        switch move {
+        case "Камень":
+            if computerMove == move {
+                moveTitle = "Одинаково"
+            } else {
+                if computerMove == "Бумага" {
+                    computerScore += 1
+                    moveTitle = "+1 Skynet"
+                } else {
+                    playerScore += 1
+                    moveTitle = "+1 Человечеству"
+                }
+            }
+        case "Ножницы":
+            if computerMove == move {
+                moveTitle = "Одинаково"
+            } else {
+                if computerMove == "Камень" {
+                    computerScore += 1
+                } else {
+                    playerScore += 1
+                }
+            }
+        default: if computerMove == move {
+            moveTitle = "Одинаково"
+        } else {
+            if computerMove == "Ножницы" {
+                computerScore += 1
+            } else {
+                playerScore += 1
+            }
+        }
+        }
+        if computerScore == 10 || playerScore == 10 {
+            gameOver = true
+        }
+    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
