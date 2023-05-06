@@ -31,7 +31,6 @@ struct ContentView: View {
                             .font(.title)
                             .foregroundColor(.white)
                     }
-                    
                     HStack {
                         Text("\(computerScore)")
                             .font(.system(size: 50))
@@ -93,6 +92,7 @@ struct ContentView: View {
                         computerScore = 0
                         playerScore = 0
                         gameOver = false
+                        moveTitle = "Начнем?"
                     }
                 } message: {
                     if computerScore > playerScore {
@@ -117,32 +117,18 @@ struct ContentView: View {
             if computerMove == move {
                 moveTitle = "Одинаково"
             } else {
-                if computerMove == "Бумага" {
-                    computerScore += 1
-                    moveTitle = "+1 Skynet"
-                } else {
-                    playerScore += 1
-                    moveTitle = "+1 Человечеству"
-                }
+                checkAnswer("Бумага")
             }
         case "Ножницы":
             if computerMove == move {
                 moveTitle = "Одинаково"
             } else {
-                if computerMove == "Камень" {
-                    computerScore += 1
-                } else {
-                    playerScore += 1
-                }
+                checkAnswer("Камень")
             }
         default: if computerMove == move {
             moveTitle = "Одинаково"
         } else {
-            if computerMove == "Ножницы" {
-                computerScore += 1
-            } else {
-                playerScore += 1
-            }
+            checkAnswer("Ножницы")
         }
         }
         if computerScore == 10 || playerScore == 10 {
@@ -150,6 +136,15 @@ struct ContentView: View {
         }
     }
     
+    func checkAnswer(_ variant: String) {
+        if computerMove == variant {
+            computerScore += 1
+            moveTitle = "+1 Skynet"
+        } else {
+            playerScore += 1
+            moveTitle = "+1 Человечеству"
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
